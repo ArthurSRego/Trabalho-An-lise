@@ -38,4 +38,3 @@ TODO:
 - Arquitetura, organização dos pacotes, padrões e registros de decisão.
 - Links para UML, matriz de rastreabilidade, resultados dos testes e registro de uso de IA.
 
-Oui
