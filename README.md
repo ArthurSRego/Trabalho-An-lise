@@ -37,5 +37,3 @@ TODO:
 - Escopo implementado, casos de uso, regras, perfis e limitações conhecidas.
 - Arquitetura, organização dos pacotes, padrões e registros de decisão.
 - Links para UML, matriz de rastreabilidade, resultados dos testes e registro de uso de IA.
-<img width="474" height="315" alt="image" src="https://github.com/user-attachments/assets/260b07e1-72f9-4c61-8d44-75de8f4e681e" />
-
