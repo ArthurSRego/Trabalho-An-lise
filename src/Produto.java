@@ -7,13 +7,13 @@ public class Produto {
     private Quantidade estoqueReservado;
     private Quantidade estoqueMinimo;
 
-    public Produto(String codigoProduto, String nomeProduto, Dinheiro preco,
+    public Produto(String codigoProduto, String nomeProduto, Dinheiro precoUnitario,
                    Quantidade estoqueFisico, Quantidade estoqueReservado,
                    Quantidade estoqueMinimo) {
 
         this.codigoProduto = codigoProduto;
         this.nomeProduto = nomeProduto;
-        this.precoUnitario = preco;
+        this.precoUnitario = precoUnitario;
         this.estoqueFisico = estoqueFisico;
         this.estoqueReservado = estoqueReservado;
         this.estoqueMinimo = estoqueMinimo;
