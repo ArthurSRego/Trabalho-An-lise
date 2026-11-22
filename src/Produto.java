@@ -1,4 +1,3 @@
-package Mercadinho;
 public class Produto {
 
     private String codigoProduto;
