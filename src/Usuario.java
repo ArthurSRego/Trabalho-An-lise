@@ -1,5 +1,3 @@
-package Mercadinho;
-
 public class Usuario {
     private String loginUsuario;
     private String nomeUsuario;
