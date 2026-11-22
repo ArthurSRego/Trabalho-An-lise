@@ -7,7 +7,7 @@ public class Produto {
     private Quantidade estoqueReservado;
     private Quantidade estoqueMinimo;
 
-    public Produto(String codigo, String nome, Dinheiro preco,
+    public Produto(String codigoProduto, String nomeProduto, Dinheiro preco,
                    Quantidade estoqueFisico, Quantidade estoqueReservado,
                    Quantidade estoqueMinimo) {
 
