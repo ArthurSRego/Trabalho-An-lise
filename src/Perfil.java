@@ -1,4 +1,4 @@
 public enum Perfil {
-    CLIENTE,
-    DONO
+    ATENDENTE,
+    GERENTE
 }
