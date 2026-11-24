@@ -17,12 +17,11 @@ public class Pedido {
     private final PoliticaDesconto politicaDesconto; // STRATEGY
     private final List<ItemPedido> itens;
 
-    /** Cria um pedido NOVO: começa ABERTO e sem itens. */
+    // Cria um pedido aberto e sem itens
     public Pedido(int numero, String cliente, String loginAtendente, PoliticaDesconto politicaDesconto) {
         this(numero, cliente, loginAtendente, StatusPedido.ABERTO, politicaDesconto, new ArrayList<>());
     }
 
-    /** Construtor completo, usado pelo repositório ao ler um pedido do arquivo. */
     public Pedido(int numero, String cliente, String loginAtendente, StatusPedido status,
                   PoliticaDesconto politicaDesconto, List<ItemPedido> itens) {
         if (numero <= 0) {
@@ -42,19 +41,7 @@ public class Pedido {
         this.itens = new ArrayList<>(itens);   // cópia: quem passou a lista não consegue mexer na nossa
     }
 
-    // ------------------------------------------------------------------
-    // Itens (UC01 - Registrar pedido)
-    // ------------------------------------------------------------------
-
-    /**
-     * Inclui um produto no pedido.
-     *
-     * RN02: só é possível incluir itens enquanto o pedido está ABERTO.
-     * RN01: a quantidade TOTAL deste produto no pedido não pode passar do
-     *       estoque disponível. (A reserva de verdade só acontece ao confirmar.)
-     * Se o produto já está no pedido, a quantidade da mesma linha aumenta
-     * (não criamos linhas repetidas para o mesmo produto).
-     */
+    // Registrar pedids
     public void adicionarItem(Produto produto, Quantidade quantidade) {
         if (status != StatusPedido.ABERTO) {
             throw new TransicaoInvalidaException("Só é possível incluir itens em pedidos ABERTOS. O pedido #"
@@ -64,7 +51,6 @@ public class Pedido {
             throw new RegraDeNegocioException("A quantidade do item deve ser de pelo menos 1 unidade.");
         }
 
-        // RN01: o que já está no pedido + o que está entrando agora
         Quantidade totalDesejado = quantidadeDoProduto(produto.getCodigo()).somar(quantidade);
         if (totalDesejado.ehMaiorQue(produto.getEstoqueDisponivel())) {
             throw new EstoqueInsuficienteException("Estoque insuficiente para " + produto
@@ -91,11 +77,8 @@ public class Pedido {
         return Quantidade.ZERO;
     }
 
-    // ------------------------------------------------------------------
-    // Valores (RN05 - política de desconto via Strategy)
-    // ------------------------------------------------------------------
-
-    /** Soma dos itens, antes do desconto. */
+    //política de desconto via Strategy
+    // Soma dos itens antes do desconto
     public Dinheiro getSubtotal() {
         Dinheiro soma = Dinheiro.ZERO;
         for (ItemPedido item : itens) {
@@ -104,21 +87,15 @@ public class Pedido {
         return soma;
     }
 
-    /** STRATEGY em ação: o pedido delega o cálculo para a política escolhida. */
     public Dinheiro getDesconto() {
         return politicaDesconto.calcularDesconto(getSubtotal());
     }
 
-    /** Total a pagar = subtotal - desconto. */
     public Dinheiro getTotal() {
         return getSubtotal().subtrair(getDesconto());
     }
 
-    // ------------------------------------------------------------------
-    // Mudanças de status (RN02)
-    // ------------------------------------------------------------------
-
-    /** ABERTO -> CONFIRMADO. Um pedido vazio não pode ser confirmado. */
+    // Mudanças de status
     public void confirmar() {
         verificarTransicao(StatusPedido.CONFIRMADO);
         if (itens.isEmpty()) {
@@ -127,19 +104,17 @@ public class Pedido {
         status = StatusPedido.CONFIRMADO;
     }
 
-    /** CONFIRMADO -> FINALIZADO (pedido entregue ao cliente). */
     public void finalizar() {
         verificarTransicao(StatusPedido.FINALIZADO);
         status = StatusPedido.FINALIZADO;
     }
 
-    /** ABERTO ou CONFIRMADO -> CANCELADO. */
     public void cancelar() {
         verificarTransicao(StatusPedido.CANCELADO);
         status = StatusPedido.CANCELADO;
     }
 
-    /** RN02: lança exceção se a seta "status atual -> novo status" não existe no diagrama. */
+    //lança exceção se a seta "status atual -> novo status" não existe no diagrama
     private void verificarTransicao(StatusPedido novoStatus) {
         if (!status.podeMudarPara(novoStatus)) {
             throw new TransicaoInvalidaException("Transição inválida: o pedido #" + numero + " está "
@@ -147,9 +122,6 @@ public class Pedido {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Consultas
-    // ------------------------------------------------------------------
 
     public int getNumero() {
         return numero;
@@ -171,7 +143,6 @@ public class Pedido {
         return politicaDesconto;
     }
 
-    /** Devolve uma CÓPIA da lista: para mudar itens é preciso passar por adicionarItem(). */
     public List<ItemPedido> getItens() {
         return new ArrayList<>(itens);
     }

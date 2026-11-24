@@ -14,7 +14,6 @@ public class CatalogoDescontos {
     // assim o menu mostra as opções sempre na mesma ordem.
     private final Map<String, PoliticaDesconto> politicas = new LinkedHashMap<>();
 
-    /** Adiciona uma política. Códigos repetidos não são permitidos. */
     public void registrar(PoliticaDesconto politica) {
         String codigo = politica.getCodigo().toUpperCase();
         if (politicas.containsKey(codigo)) {
@@ -23,7 +22,6 @@ public class CatalogoDescontos {
         politicas.put(codigo, politica);
     }
 
-    /** Busca pelo código (maiúsculas ou minúsculas). Lança exceção se não existir. */
     public PoliticaDesconto buscar(String codigo) {
         PoliticaDesconto politica = null;
         if (codigo != null) {
