@@ -22,7 +22,7 @@ Foto
 
 Nome: Arthur Victor de Arruda Silva
 Email:arthur.arruda@dcx.ufpb.br
-[Github](https://github.com/ArthurSilva)
+[Github](https://github.com/ArthuArruda)
 Foto
 
 Nome: Fernando Diogo Netto
