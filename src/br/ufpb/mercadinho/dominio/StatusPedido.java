@@ -1,3 +1,5 @@
+package br.ufpb.mercadinho.dominio;
+
 public enum StatusPedido {
     ABERTO,
     CONFIRMADO,

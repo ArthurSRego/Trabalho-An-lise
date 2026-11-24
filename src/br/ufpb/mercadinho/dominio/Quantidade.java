@@ -1,3 +1,7 @@
+package br.ufpb.mercadinho.dominio;
+
+import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
+
 public class Quantidade {
 
     public static final Quantidade ZERO = new Quantidade(0);
@@ -6,7 +10,7 @@ public class Quantidade {
 
     public Quantidade(int valor) {
         if (valor < 0) {
-            throw new RegraDeNegocioException("Quantidade não pode ser negativa (recebido: " + valor + ").");
+            throw new RegraDeNegocioException("br.ufpb.mercadinho.dominio.Quantidade não pode ser negativa (recebido: " + valor + ").");
         }
         this.valor = valor;
     }

@@ -1,4 +1,6 @@
- public class Texto {
+package br.ufpb.mercadinho.dominio;
+
+public class Texto {
     // Pequenas funções de apoio para validar textos dos identificadores
     private Texto() {
     }

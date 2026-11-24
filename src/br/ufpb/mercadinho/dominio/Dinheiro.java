@@ -1,3 +1,7 @@
+package br.ufpb.mercadinho.dominio;
+
+import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
+
 public class Dinheiro {
 
     public static final Dinheiro ZERO = new Dinheiro(0);

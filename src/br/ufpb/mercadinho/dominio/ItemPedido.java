@@ -1,3 +1,6 @@
+package br.ufpb.mercadinho.dominio;
+
+import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 
 public class ItemPedido {
 
