@@ -18,17 +18,18 @@ Foto:
 Nome: Tércio Felipe Oliveira Francelino
 Email:tercio.oliveira@dcx.ufpb.br
 [Github](https://github.com/inderios)
-Foto
+Foto:
 
 Nome: Arthur Victor de Arruda Silva
 Email:arthur.arruda@dcx.ufpb.br
 [Github](https://github.com/ArthuArruda)
-Foto
+Foto:
 
 Nome: Fernando Diogo Netto
 Email:fernando.diogo@dcx.ufpb.br
 [Github](https://github.com/fernetto)
-Foto
+Foto:<img width="1092" height="1280" alt="image" src="https://github.com/user-attachments/assets/683c6862-5f61-4138-9669-90eb3ca7ef34" />
+
 
 [Requisitos](https://app.notion.com/p/Getting-Started-bc19e085bcc746679a64df42d9a64f4b?source=copy_link&__dm_a=1)
 
