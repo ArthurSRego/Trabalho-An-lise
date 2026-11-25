@@ -7,7 +7,7 @@ import br.ufpb.mercadinho.dominio.Dinheiro;
 import br.ufpb.mercadinho.dominio.Produto;
 import br.ufpb.mercadinho.dominio.Quantidade;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
-
+import br.ufpb.mercadinho.repositorio.ProdutoRepositorio;
 
 public class ProdutoRepositorioArquivo implements ProdutoRepositorio {
 
@@ -66,7 +66,7 @@ public class ProdutoRepositorioArquivo implements ProdutoRepositorio {
                     new Quantidade(Integer.parseInt(campos[4])),
                     new Quantidade(Integer.parseInt(campos[5])));
         } catch (RuntimeException e) {
-            // Número mal escrito, valor negativo etc.: o arquivo foi alterado ou está corrompido.
+            // Número mal escrito, valor negativo, etc.: o arquivo foi alterado ou está corrompido.
             throw new PersistenciaException("Produto inválido no arquivo de dados: \"" + linha + "\"", e);
         }
     }

@@ -11,6 +11,7 @@ import br.ufpb.mercadinho.dominio.StatusPedido;
 import br.ufpb.mercadinho.dominio.desconto.CatalogoDescontos;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
+import br.ufpb.mercadinho.repositorio.PedidoRepositorio;
 
 public class PedidoRepositorioArquivo implements PedidoRepositorio {
 

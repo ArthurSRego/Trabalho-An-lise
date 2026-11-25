@@ -7,10 +7,10 @@ import br.ufpb.mercadinho.dominio.Cobranca;
 import br.ufpb.mercadinho.dominio.Dinheiro;
 import br.ufpb.mercadinho.dominio.StatusCobranca;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
+import br.ufpb.mercadinho.repositorio.CobrancaRepositorio;
 
 
-public class CobrancaRepositorioArquivo {
-
+public class CobrancaRepositorioArquivo implements CobrancaRepositorio {
     private final BancoDeDados banco;
 
     public CobrancaRepositorioArquivo(BancoDeDados banco) {

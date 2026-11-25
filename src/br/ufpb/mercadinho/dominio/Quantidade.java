@@ -10,7 +10,7 @@ public class Quantidade {
 
     public Quantidade(int valor) {
         if (valor < 0) {
-            throw new RegraDeNegocioException("br.ufpb.mercadinho.dominio.Quantidade não pode ser negativa (recebido: " + valor + ").");
+            throw new RegraDeNegocioException("Quantidade não pode ser negativa (recebido: " + valor + ").");
         }
         this.valor = valor;
     }
@@ -49,5 +49,15 @@ public class Quantidade {
         }
         Quantidade outra = (Quantidade) outroObjeto;
         return this.valor == outra.valor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(valor);
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(valor);
     }
 }

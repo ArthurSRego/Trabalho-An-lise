@@ -18,21 +18,17 @@ import br.ufpb.mercadinho.repositorio.Transacao;
 
 public class BancoDeDados implements Transacao {
 
-    // ------------------------------------------------------------------
-    // Nomes das tabelas (usados pelos repositórios)
-    // ------------------------------------------------------------------
+
     public static final String TABELA_USUARIOS = "usuarios";
     public static final String TABELA_PRODUTOS = "produtos";
     public static final String TABELA_PEDIDOS = "pedidos";
     public static final String TABELA_ITENS_PEDIDO = "itens_pedido";
     public static final String TABELA_COBRANCAS = "cobrancas";
 
-    /** Ordem das tabelas no arquivo. */
     private static final String[] NOMES_DAS_TABELAS = {
             TABELA_USUARIOS, TABELA_PRODUTOS, TABELA_PEDIDOS, TABELA_ITENS_PEDIDO, TABELA_COBRANCAS
     };
 
-    /** Descrição das colunas de cada tabela (mesma ordem de NOMES_DAS_TABELAS), escrita como comentário. */
     private static final String[] COLUNAS_DAS_TABELAS = {
             "login;nome;perfil",
             "codigo;nome;preco_centavos;estoque_fisico;estoque_reservado;estoque_minimo",
@@ -45,14 +41,11 @@ public class BancoDeDados implements Transacao {
     // SINGLETON
     // ------------------------------------------------------------------
 
-    /** A única instância (começa null e é criada no primeiro getInstancia()). */
     private static BancoDeDados instancia;
 
-    /** Construtor PRIVADO: impede "new BancoDeDados()" fora desta classe. */
     private BancoDeDados() {
     }
 
-    /** Ponto de acesso global: devolve sempre o MESMO objeto. */
     public static BancoDeDados getInstancia() {
         if (instancia == null) {
             instancia = new BancoDeDados();
@@ -69,12 +62,7 @@ public class BancoDeDados implements Transacao {
     private Map<String, List<String>> copiaDeSeguranca;  // usada pelo desfazer()
     private boolean emTransacao;
 
-    /**
-     * Abre (ou cria) o arquivo de dados e carrega tudo para a memória.
-     *
-     * Chamar de novo com o mesmo caminho equivale a "fechar e abrir o programa":
-     * o que estava na memória é descartado e tudo é lido do disco outra vez.
-     */
+
     public void conectar(String caminhoDoArquivo) {
         this.arquivo = Paths.get(caminhoDoArquivo);
         this.tabelas = criarTabelasVazias();
@@ -98,7 +86,6 @@ public class BancoDeDados implements Transacao {
         // Ele será criado na primeira vez que uma transação for efetivada.
     }
 
-    /** Caminho do arquivo oficial (útil para mensagens na tela). */
     public Path getArquivo() {
         return arquivo;
     }
@@ -107,16 +94,11 @@ public class BancoDeDados implements Transacao {
     // Operações usadas pelos repositórios
     // ------------------------------------------------------------------
 
-    /** Devolve uma CÓPIA das linhas da tabela (quem chamou pode alterar a lista à vontade). */
     public List<String> lerTabela(String nomeTabela) {
         return new ArrayList<>(tabela(nomeTabela));
     }
 
-    /**
-     * Procura a linha cuja CHAVE (primeiro campo) é igual a "chave".
-     *
-     * @return a linha encontrada, ou null se não existir
-     */
+
     public String buscarLinha(String nomeTabela, String chave) {
         for (String linha : tabela(nomeTabela)) {
             if (primeiroCampo(linha).equals(chave)) {
@@ -126,10 +108,7 @@ public class BancoDeDados implements Transacao {
         return null;
     }
 
-    /**
-     * Insere a linha ou, se já existe uma linha com a mesma chave (primeiro campo),
-     * substitui essa linha. Só funciona dentro de uma transação.
-     */
+
     public void salvarLinha(String nomeTabela, String linha) {
         exigirTransacaoAtiva();
         List<String> linhas = tabela(nomeTabela);
@@ -143,7 +122,6 @@ public class BancoDeDados implements Transacao {
         linhas.add(linha);              // não existia: insere no final
     }
 
-    /** Troca TODAS as linhas de uma tabela. Só funciona dentro de uma transação. */
     public void gravarTabela(String nomeTabela, List<String> novasLinhas) {
         exigirTransacaoAtiva();
         tabela(nomeTabela);   // só para conferir se a tabela existe

@@ -5,7 +5,6 @@ import br.ufpb.mercadinho.dominio.Dinheiro;
 
 public interface PoliticaDesconto {
 
-
     String getCodigo();
 
 
