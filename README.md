@@ -1,40 +1,47 @@
 # Trabalho-Análise
 
-UFPB
-Campus-IV
-APS-Analise de projetos e sistemas
-Professor: DORGIVAL PEREIRA DA SILVA NETTO
-Sistema de pedido de mercadinho (Bom Jesus)
-Objetivo: criação de um sistema para um mercado feito totalmente em java seguindo os requisitos de arquitetura de sistemas.
+# Sistema de Pedido de Mercadinho (Bom Jesus)
 
-Equipe 3
+- **Universidade:** UFPB — Campus IV
+- **Disciplina:** APS — Análise e Projeto de Sistemas
+- **Professor:** Dorgival Pereira da Silva Netto
+- **Equipe:** 3
 
+**Objetivo:** criação de um sistema para um mercado feito totalmente em Java, seguindo os requisitos de arquitetura de sistemas.
 
-Nome:Arthur Silva Rêgo
-Email:arthur.rego@dcx.ufpb.br
-[Github](:https://github.com/ArthurSRego)
-Foto:
+## Integrantes
 
-Nome: Tércio Felipe Oliveira Francelino
-Email:tercio.oliveira@dcx.ufpb.br
-[Github](https://github.com/inderios)
-Foto:
+### Arthur Silva Rêgo
+- **E-mail:** arthur.rego@dcx.ufpb.br
+- **GitHub:** [ArthurSRego](https://github.com/ArthurSRego)
+- **Foto:** *(pendente)*
 
-Nome: Arthur Victor de Arruda Silva
-Email:arthur.arruda@dcx.ufpb.br
-[Github](https://github.com/ArthuArruda)
-Foto:
+### Tércio Felipe Oliveira Francelino
+- **E-mail:** tercio.oliveira@dcx.ufpb.br
+- **GitHub:** [inderios](https://github.com/inderios)
+- **Foto:**
 
-Nome: Fernando Diogo Netto
-Email:fernando.diogo@dcx.ufpb.br
-[Github](https://github.com/fernetto)
-Foto:<img width="1092" height="1280" alt="image" src="https://github.com/user-attachments/assets/683c6862-5f61-4138-9669-90eb3ca7ef34" />
+<img width="160" alt="Tércio Felipe Oliveira Francelino" src="https://github.com/user-attachments/assets/eeb8a6e1-9e46-4953-b585-1424f3302717" />
 
+### Arthur Victor de Arruda Silva
+- **E-mail:** arthur.arruda@dcx.ufpb.br
+- **GitHub:** [ArthuArruda](https://github.com/ArthuArruda)
+- **Foto:** *(pendente)*
 
-[Requisitos](https://app.notion.com/p/Getting-Started-bc19e085bcc746679a64df42d9a64f4b?source=copy_link&__dm_a=1)
+### Fernando Diogo Netto
+- **E-mail:** fernando.diogo@dcx.ufpb.br
+- **GitHub:** [fernetto](https://github.com/fernetto)
+- **Foto:**
 
-TODO:
-- Coloca o que foi revisado ou adaptado aqui depois.
+<img width="160" alt="Fernando Diogo Netto" src="https://github.com/user-attachments/assets/683c6862-5f61-4138-9669-90eb3ca7ef34" />
+
+## Requisitos
+
+[Página de requisitos no Notion](https://app.notion.com/p/Getting-Started-bc19e085bcc746679a64df42d9a64f4b?source=copy_link&__dm_a=1)
+
+## TODO
+
+- Colocar aqui o que foi revisado ou adaptado.
 - Escopo implementado, casos de uso, regras, perfis e limitações conhecidas.
 - Arquitetura, organização dos pacotes, padrões e registros de decisão.
 - Links para UML, matriz de rastreabilidade, resultados dos testes e registro de uso de IA.
