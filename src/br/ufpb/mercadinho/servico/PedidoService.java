@@ -1,6 +1,9 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.*;
+import br.ufpb.mercadinho.dominio.pedido.*;
+import br.ufpb.mercadinho.dominio.usuario.Usuario;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
+import br.ufpb.mercadinho.dominio.financeiro.*;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 import br.ufpb.mercadinho.repositorio.*;
