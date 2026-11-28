@@ -1,6 +1,6 @@
 package br.ufpb.mercadinho.repositorio;
 
-import br.ufpb.mercadinho.dominio.Cobranca;
+import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
 
 import java.util.List;
 
