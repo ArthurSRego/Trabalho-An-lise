@@ -27,7 +27,7 @@
 ### Arthur Victor de Arruda Silva
 - **E-mail:** arthur.arruda@dcx.ufpb.br
 - **GitHub:** [ArthuArruda](https://github.com/ArthuArruda)
-- **Foto:** <img width="1204" height="1600" alt="WhatsApp Image 2026-11-28 at 11 26 49" src="https://github.com/user-attachments/assets/64f5f4de-1943-4e69-bd28-454d7ea666b5" />
+- **Foto:** <img width="160" height="160" alt="WhatsApp Image 2026-11-28 at 11 26 49" src="https://github.com/user-attachments/assets/64f5f4de-1943-4e69-bd28-454d7ea666b5" />
 
 
 ### Fernando Diogo Netto
