@@ -1,7 +1,7 @@
 package br.ufpb.mercadinho.servico.observador;
 
-import br.ufpb.mercadinho.dominio.Pedido;
-import br.ufpb.mercadinho.dominio.StatusPedido;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
+import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
 
 public interface ObservadorPedido {
 
