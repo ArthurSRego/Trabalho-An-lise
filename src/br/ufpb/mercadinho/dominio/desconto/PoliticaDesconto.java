@@ -1,6 +1,6 @@
 package br.ufpb.mercadinho.dominio.desconto;
 
-import br.ufpb.mercadinho.dominio.Dinheiro;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
 
 
 public interface PoliticaDesconto {
