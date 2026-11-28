@@ -1,4 +1,4 @@
-package br.ufpb.mercadinho.servico;
+package br.ufpb.mercadinho.TESTES.servico;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -11,6 +11,7 @@ import br.ufpb.mercadinho.TESTES.AmbienteDeTeste;
 import br.ufpb.mercadinho.dominio.pedido.Pedido;
 import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
 import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.servico.MercadinhoFacade;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +21,7 @@ import org.junit.jupiter.api.Test;
 import br.ufpb.mercadinho.excecao.AcessoNegadoException;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 
-/**
- * Testes do padrão FACADE: a tela consegue executar os casos de uso inteiros
- * conhecendo SÓ a MercadinhoFacade (sem tocar em serviços ou repositórios).
- * Também cobre a sessão (login) e a RN06 vista pela fachada.
- */
+
 class MercadinhoFacadeTest {
 
     private AmbienteDeTeste amb;
