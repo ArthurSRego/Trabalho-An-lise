@@ -1,7 +1,10 @@
 package br.ufpb.mercadinho.visao;
 
-import br.ufpb.mercadinho.dominio.*;
+import br.ufpb.mercadinho.dominio.produto.Produto;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
+import br.ufpb.mercadinho.dominio.pedido.ItemPedido;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
+import br.ufpb.mercadinho.excecao.FimDaEntradaException;
 
 import java.io.PrintStream;
 import java.util.List;
