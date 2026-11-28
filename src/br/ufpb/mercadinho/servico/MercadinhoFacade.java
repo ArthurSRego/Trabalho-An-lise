@@ -5,7 +5,6 @@ import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
 
 import java.util.List;
 
-/** Facade: oferece uma porta de entrada única para os serviços do mercadinho. */
 public class MercadinhoFacade {
     private final ProdutoService produtoService;
     private final PedidoService pedidoService;
