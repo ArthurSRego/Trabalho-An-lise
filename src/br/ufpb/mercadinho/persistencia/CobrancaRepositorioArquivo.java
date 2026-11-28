@@ -3,9 +3,9 @@ package br.ufpb.mercadinho.persistencia;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufpb.mercadinho.dominio.Cobranca;
-import br.ufpb.mercadinho.dominio.Dinheiro;
-import br.ufpb.mercadinho.dominio.StatusCobranca;
+import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.dominio.financeiro.StatusCobranca;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
 import br.ufpb.mercadinho.repositorio.CobrancaRepositorio;
 
