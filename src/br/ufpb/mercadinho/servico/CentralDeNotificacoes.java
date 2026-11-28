@@ -1,8 +1,8 @@
 package br.ufpb.mercadinho.servico.observador;
 
-import br.ufpb.mercadinho.dominio.Pedido;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
 import br.ufpb.mercadinho.dominio.Produto;
-import br.ufpb.mercadinho.dominio.StatusPedido;
+import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
 
 import java.util.ArrayList;
 import java.util.List;
