@@ -1,99 +1,121 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.ufpb.mercadinho.dominio.valor.*;
 import br.ufpb.mercadinho.dominio.Produto;
-import br.ufpb.mercadinho.dominio.valor.Quantidade;
 import br.ufpb.mercadinho.dominio.usuario.Usuario;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 import br.ufpb.mercadinho.repositorio.ProdutoRepositorio;
 import br.ufpb.mercadinho.repositorio.Transacao;
 import br.ufpb.mercadinho.servico.observador.CentralDeNotificacoes;
 
-import java.util.List;
-
 public class ProdutoService {
+
     private final ProdutoRepositorio produtos;
     private final Transacao transacao;
-    private final Autorizacao autorizacao;
-    private final CentralDeNotificacoes notificacoes;
+    private final CentralDeNotificacoes notificacoes; 
 
-    public ProdutoService(ProdutoRepositorio produtos, Transacao transacao,
-                          Autorizacao autorizacao, CentralDeNotificacoes notificacoes) {
+    public ProdutoService(ProdutoRepositorio produtos, Transacao transacao, CentralDeNotificacoes notificacoes) {
         this.produtos = produtos;
         this.transacao = transacao;
-        this.autorizacao = autorizacao;
         this.notificacoes = notificacoes;
     }
+    
+    public Produto cadastrarProduto(Usuario usuario, String codigo, String nome, Dinheiro preco,
+                                    int estoqueInicial, int estoqueMinimo) {
+        Autorizacao.exigirGerente(usuario, "cadastrar produtos");              
+        Produto novo = new Produto(codigo, nome, preco, new Quantidade(estoqueInicial), new Quantidade(estoqueMinimo));
+        if (produtos.buscarPorCodigo(novo.getCodigo()) != null) {
+            throw new RegraDeNegocioException("Já existe um produto com o código " + novo.getCodigo() + ".");
+        }
 
-    public void cadastrar(Usuario usuario, Produto produto) {
-        autorizacao.exigirGerente(usuario);
-        if (produto == null) throw new RegraDeNegocioException("O produto é obrigatório.");
-        if (produtos.buscarPorCodigo(produto.getCodigo()) != null)
-            throw new RegraDeNegocioException("Já existe um produto com o código " + produto.getCodigo() + ".");
-        executarTransacao(() -> produtos.salvar(produto));
-        avisarSeEstoqueMinimo(produto);
+        transacao.iniciar();
+        try {
+            produtos.salvar(novo);
+            transacao.efetivar();
+        } catch (RuntimeException erro) {
+            transacao.desfazer();
+            throw erro;
+        }
+        return novo;
     }
 
-    public Produto buscarPorCodigo(Usuario usuario, String codigo) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Produto produto = produtos.buscarPorCodigo(codigo);
-        if (produto == null) throw new RegraDeNegocioException("Produto não encontrado: " + codigo + ".");
+    public Produto alterarPreco(Usuario usuario, String codigo, Dinheiro novoPreco) {
+        Autorizacao.exigirGerente(usuario, "alterar preços");                   
+        Produto produto = buscarProdutoObrigatorio(codigo);
+
+        transacao.iniciar();
+        try {
+            produto.alterarPreco(novoPreco);
+            produtos.salvar(produto);
+            transacao.efetivar();
+        } catch (RuntimeException erro) {
+            transacao.desfazer();
+            throw erro;
+        }
         return produto;
     }
 
-    public List<Produto> listarTodos(Usuario usuario) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
+    public Produto registrarEntrada(Usuario usuario, String codigo, int quantidade) {
+        Autorizacao.exigirGerente(usuario, "registrar entrada de estoque");    
+        Produto produto = buscarProdutoObrigatorio(codigo);
+
+        transacao.iniciar();
+        try {
+            produto.registrarEntrada(new Quantidade(quantidade));
+            produtos.salvar(produto);
+            transacao.efetivar();
+        } catch (RuntimeException erro) {
+            transacao.desfazer();
+            throw erro;
+        }
+        return produto;
+    }
+
+    public Produto registrarSaida(Usuario usuario, String codigo, int quantidade) {
+        Autorizacao.exigirGerente(usuario, "registrar saída de estoque");   
+        Produto produto = buscarProdutoObrigatorio(codigo);
+
+        transacao.iniciar();
+        try {
+            produto.registrarSaida(new Quantidade(quantidade));                  
+            produtos.salvar(produto);
+            transacao.efetivar();
+        } catch (RuntimeException erro) {
+            transacao.desfazer();
+            throw erro;
+        }
+
+        if (produto.atingiuEstoqueMinimo()) {
+            notificacoes.notificarEstoqueMinimo(produto);                         
+        }
+        return produto;
+    }
+
+    public List<Produto> listarProdutos(Usuario usuario) {
+        Autorizacao.exigirLogin(usuario);                                          
         return produtos.listarTodos();
     }
 
-    public void registrarEntrada(Usuario usuario, String codigo, Quantidade quantidade) {
-        autorizacao.exigirGerente(usuario);
-        alterarEstoque(codigo, quantidade, true);
+    public List<Produto> listarProdutosParaRepor(Usuario usuario) {
+        Autorizacao.exigirGerente(usuario, "ver o relatório de reposição");    
+        List<Produto> paraRepor = new ArrayList<>();
+        for (Produto produto : produtos.listarTodos()) {
+            if (produto.atingiuEstoqueMinimo()) {
+                paraRepor.add(produto);
+            }
+        }
+        return paraRepor;
     }
 
-    public void registrarSaida(Usuario usuario, String codigo, Quantidade quantidade) {
-        autorizacao.exigirGerente(usuario);
-        alterarEstoque(codigo, quantidade, false);
-    }
-
-    public void alterarPreco(Usuario usuario, String codigo, Dinheiro novoPreco) {
-        autorizacao.exigirGerente(usuario);
-        Produto produto = buscarInterno(codigo);
-        executarTransacao(() -> {
-            produto.alterarPreco(novoPreco);
-            produtos.salvar(produto);
-        });
-    }
-
-    private void alterarEstoque(String codigo, Quantidade quantidade, boolean entrada) {
-        Produto produto = buscarInterno(codigo);
-        executarTransacao(() -> {
-            if (entrada) produto.registrarEntrada(quantidade);
-            else produto.registrarSaida(quantidade);
-            produtos.salvar(produto);
-        });
-        avisarSeEstoqueMinimo(produto);
-    }
-
-    private Produto buscarInterno(String codigo) {
+    private Produto buscarProdutoObrigatorio(String codigo) {
         Produto produto = produtos.buscarPorCodigo(codigo);
-        if (produto == null) throw new RegraDeNegocioException("Produto não encontrado: " + codigo + ".");
+        if (produto == null) {
+            throw new RegraDeNegocioException("Produto \"" + codigo + "\" não encontrado.");
+        }
         return produto;
     }
-
-    private void avisarSeEstoqueMinimo(Produto produto) {
-        if (produto.atingiuEstoqueMinimo() && notificacoes != null)
-            notificacoes.notificarEstoqueMinimo(produto);
-    }
-
-    private void executarTransacao(Runnable operacao) {
-        transacao.iniciar();
-        try {
-            operacao.run();
-            transacao.efetivar();
-        } catch (RuntimeException e) {
-            transacao.desfazer();
-            throw e;
-        }
-    }
 }
+
