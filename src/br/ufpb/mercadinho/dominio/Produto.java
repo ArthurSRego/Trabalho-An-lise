@@ -5,12 +5,12 @@ import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 
 public class Produto {
 
-    private final String codigo;          // identificador único (ex.: "P001")
+    private final String codigo;         
     private final String nome;
-    private Dinheiro preco;               // preço de venda atual
+    private Dinheiro preco;             
     private Quantidade estoqueFisico;
     private Quantidade estoqueReservado;
-    private final Quantidade estoqueMinimo; // ao chegar nele, o Observer avisa para repor
+    private final Quantidade estoqueMinimo;
 
     public Produto(String codigo, String nome, Dinheiro preco, Quantidade estoqueFisico, Quantidade estoqueMinimo) {
         this(codigo, nome, preco, estoqueFisico, Quantidade.ZERO, estoqueMinimo);
