@@ -1,4 +1,4 @@
-package br.ufpb.mercadinho.dominio;
+package br.ufpb.mercadinho.dominio.pedido;
 
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 
