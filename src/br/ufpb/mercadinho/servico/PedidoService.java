@@ -1,165 +1,216 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.pedido.*;
-import br.ufpb.mercadinho.dominio.usuario.Usuario;
-import br.ufpb.mercadinho.dominio.valor.Quantidade;
-import br.ufpb.mercadinho.dominio.financeiro.*;
-import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
-import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
-import br.ufpb.mercadinho.repositorio.*;
-import br.ufpb.mercadinho.servico.observador.CentralDeNotificacoes;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
+import br.ufpb.mercadinho.dominio.pedido.*;
+import br.ufpb.mercadinho.dominio.Produto;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
+import br.ufpb.mercadinho.dominio.Usuario;
+import br.ufpb.mercadinho.dominio.desconto.CatalogoDescontos;
+import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
+import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
+import br.ufpb.mercadinho.repositorio.CobrancaRepositorio;
+import br.ufpb.mercadinho.repositorio.PedidoRepositorio;
+import br.ufpb.mercadinho.repositorio.ProdutoRepositorio;
+import br.ufpb.mercadinho.repositorio.Transacao;
+import br.ufpb.mercadinho.servico.observador.CentralDeNotificacoes;
+
 public class PedidoService {
+
     private final PedidoRepositorio pedidos;
     private final ProdutoRepositorio produtos;
     private final CobrancaRepositorio cobrancas;
     private final Transacao transacao;
-    private final Autorizacao autorizacao;
-    private final CentralDeNotificacoes notificacoes;
+    private final CatalogoDescontos catalogoDescontos; 
+    private final CentralDeNotificacoes notificacoes;   
 
-    public PedidoService(PedidoRepositorio pedidos, ProdutoRepositorio produtos,
-                         CobrancaRepositorio cobrancas, Transacao transacao,
-                         Autorizacao autorizacao, CentralDeNotificacoes notificacoes) {
+    public PedidoService(PedidoRepositorio pedidos, ProdutoRepositorio produtos, CobrancaRepositorio cobrancas,
+                         Transacao transacao, CatalogoDescontos catalogoDescontos,
+                         CentralDeNotificacoes notificacoes) {
         this.pedidos = pedidos;
         this.produtos = produtos;
         this.cobrancas = cobrancas;
         this.transacao = transacao;
-        this.autorizacao = autorizacao;
+        this.catalogoDescontos = catalogoDescontos;
         this.notificacoes = notificacoes;
     }
 
-    public Pedido criarPedido(Usuario usuario, String cliente, PoliticaDesconto desconto) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        if (desconto == null) throw new RegraDeNegocioException("A política de desconto é obrigatória.");
-        Pedido pedido = new Pedido(pedidos.proximoNumero(), cliente, usuario.getLogin(), desconto);
-        executarTransacao(() -> pedidos.salvar(pedido));
-        return pedido;
-    }
+    public Pedido registrarPedido(Usuario usuario, String cliente, String codigoPolitica) {
+        Autorizacao.exigirLogin(usuario);                                          
+        PoliticaDesconto politica = catalogoDescontos.buscar(codigoPolitica);       
 
-    public Pedido buscarPorNumero(Usuario usuario, int numero) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Pedido pedido = pedidos.buscarPorNumero(numero);
-        if (pedido == null) throw new RegraDeNegocioException("Pedido #" + numero + " não encontrado.");
-        return pedido;
-    }
-
-    public List<Pedido> listarTodos(Usuario usuario) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        return pedidos.listarTodos();
-    }
-
-    public Pedido adicionarItem(Usuario usuario, int numeroPedido, String codigoProduto, Quantidade quantidade) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Pedido pedido = buscarInterno(numeroPedido);
-        Produto produto = buscarProduto(codigoProduto);
-        executarTransacao(() -> {
-            pedido.adicionarItem(produto, quantidade);
+        transacao.iniciar();
+        try {
+            Pedido pedido = new Pedido(pedidos.proximoNumero(), cliente, usuario.getLogin(), politica);
             pedidos.salvar(pedido);
-        });
-        return pedido;
+            transacao.efetivar();                                                  
+            return pedido;
+        } catch (RuntimeException erro) {
+            transacao.desfazer();                                                   
+            throw erro;
+        }
     }
 
-    public Cobranca confirmar(Usuario usuario, int numeroPedido) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Pedido pedido = buscarInterno(numeroPedido);
-        StatusPedido anterior = pedido.getStatus();
-        final Cobranca[] resultado = new Cobranca[1];
-        executarTransacao(() -> {
+    public Pedido adicionarItem(Usuario usuario, int numeroPedido, String codigoProduto, int quantidade) {
+        Autorizacao.exigirLogin(usuario);                                           
+        Pedido pedido = buscarPedidoObrigatorio(numeroPedido);
+        Produto produto = buscarProdutoObrigatorio(codigoProduto);                
+
+        transacao.iniciar();
+        try {
+            pedido.adicionarItem(produto, new Quantidade(quantidade));               
+            pedidos.salvar(pedido);
+            transacao.efetivar();                                                   
+            return pedido;
+        } catch (RuntimeException erro) {
+            transacao.desfazer();                                                   
+            throw erro;
+        }
+    }
+
+    public boolean confirmarPedido(Usuario usuario, int numeroPedido) {
+        Autorizacao.exigirLogin(usuario);                                           
+        Pedido pedido = buscarPedidoObrigatorio(numeroPedido);
+
+        if (pedido.getStatus() == StatusPedido.CONFIRMADO) {
+            return false;                                                           
+        }
+
+        StatusPedido statusAnterior = pedido.getStatus();
+        List<Produto> produtosReservados = new ArrayList<>();
+
+        transacao.iniciar();
+        try {
+
+            pedido.confirmar();                                                     
+
             for (ItemPedido item : pedido.getItens()) {
-                Produto produto = buscarProduto(item.getCodigoProduto());
-                produto.reservar(item.getQuantidade());
+                Produto produto = buscarProdutoObrigatorio(item.getCodigoProduto());
+                produto.reservar(item.getQuantidade());                             
                 produtos.salvar(produto);
+                produtosReservados.add(produto);
             }
-            pedido.confirmar();
-            pedidos.salvar(pedido);
-            Cobranca cobranca = cobrancas.buscarPorPedido(numeroPedido);
-            if (cobranca == null)
-                cobranca = new Cobranca(cobrancas.proximoNumero(), numeroPedido, pedido.getTotal());
+
+            Cobranca cobranca = new Cobranca(cobrancas.proximoNumero(), pedido.getNumero(), pedido.getTotal());
             cobrancas.salvar(cobranca);
-            resultado[0] = cobranca;
-        });
-        notificarMudanca(pedido, anterior);
-        for (ItemPedido item : pedido.getItens()) avisarEstoqueSeNecessario(buscarProduto(item.getCodigoProduto()));
-        return resultado[0];
+
+            pedidos.salvar(pedido);
+
+            transacao.efetivar();                                               
+        } catch (RuntimeException erro) {
+            transacao.desfazer();                                                  
+            throw erro;
+        }
+
+        notificacoes.notificarMudancaDeStatus(pedido, statusAnterior, pedido.getStatus());
+        avisarSeAtingiuEstoqueMinimo(produtosReservados);
+        return true;
     }
 
-    public void finalizar(Usuario usuario, int numeroPedido) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Pedido pedido = buscarInterno(numeroPedido);
-        StatusPedido anterior = pedido.getStatus();
-        executarTransacao(() -> {
-            Cobranca cobranca = cobrancas.buscarPorPedido(numeroPedido);
-            if (cobranca == null) throw new RegraDeNegocioException("O pedido não possui cobrança.");
-            cobranca.registrarPagamento();
-            cobrancas.salvar(cobranca);
+    public void finalizarPedido(Usuario usuario, int numeroPedido) {
+        Autorizacao.exigirLogin(usuario);                                           
+        Pedido pedido = buscarPedidoObrigatorio(numeroPedido);
+        StatusPedido statusAnterior = pedido.getStatus();
+
+        transacao.iniciar();
+        try {
+            pedido.finalizar();                                                     
             for (ItemPedido item : pedido.getItens()) {
-                Produto produto = buscarProduto(item.getCodigoProduto());
+                Produto produto = buscarProdutoObrigatorio(item.getCodigoProduto());
                 produto.baixarEstoqueReservado(item.getQuantidade());
                 produtos.salvar(produto);
             }
-            pedido.finalizar();
+            Cobranca cobranca = buscarCobrancaObrigatoria(numeroPedido);
+            cobranca.registrarPagamento();
+            cobrancas.salvar(cobranca);
             pedidos.salvar(pedido);
-        });
-        notificarMudanca(pedido, anterior);
-        for (ItemPedido item : pedido.getItens()) avisarEstoqueSeNecessario(buscarProduto(item.getCodigoProduto()));
+            transacao.efetivar();                                                   
+        } catch (RuntimeException erro) {
+            transacao.desfazer();                                                   
+            throw erro;
+        }
+
+        notificacoes.notificarMudancaDeStatus(pedido, statusAnterior, pedido.getStatus());
     }
 
-    public void cancelar(Usuario usuario, int numeroPedido) {
-        autorizacao.exigirAtendenteOuGerente(usuario);
-        Pedido pedido = buscarInterno(numeroPedido);
-        StatusPedido anterior = pedido.getStatus();
-        executarTransacao(() -> {
-            if (anterior == StatusPedido.CONFIRMADO) {
+    public StatusPedido cancelarPedido(Usuario usuario, int numeroPedido) {
+        Autorizacao.exigirLogin(usuario);                                           
+        Pedido pedido = buscarPedidoObrigatorio(numeroPedido);
+        StatusPedido statusAnterior = pedido.getStatus();
+
+        transacao.iniciar();
+        try {
+            pedido.cancelar();                                                      
+            if (statusAnterior == StatusPedido.CONFIRMADO) {
+     
                 for (ItemPedido item : pedido.getItens()) {
-                    Produto produto = buscarProduto(item.getCodigoProduto());
+                    Produto produto = buscarProdutoObrigatorio(item.getCodigoProduto());
                     produto.liberarReserva(item.getQuantidade());
                     produtos.salvar(produto);
                 }
-                Cobranca cobranca = cobrancas.buscarPorPedido(numeroPedido);
-                if (cobranca != null && cobranca.getStatus() == StatusCobranca.PENDENTE) {
-                    cobranca.cancelar();
-                    cobrancas.salvar(cobranca);
-                }
+                Cobranca cobranca = buscarCobrancaObrigatoria(numeroPedido);
+                cobranca.cancelar();
+                cobrancas.salvar(cobranca);
             }
-            pedido.cancelar();
+  
             pedidos.salvar(pedido);
-        });
-        notificarMudanca(pedido, anterior);
+            transacao.efetivar();                                                   
+        } catch (RuntimeException erro) {
+            transacao.desfazer();                                                   
+            throw erro;
+        }
+
+        notificacoes.notificarMudancaDeStatus(pedido, statusAnterior, pedido.getStatus());
+        return statusAnterior;
+    }
+    
+    public List<Pedido> listarPedidos(Usuario usuario) {
+        Autorizacao.exigirLogin(usuario);
+        return pedidos.listarTodos();
     }
 
-    private Pedido buscarInterno(int numero) {
-        Pedido pedido = pedidos.buscarPorNumero(numero);
-        if (pedido == null) throw new RegraDeNegocioException("Pedido #" + numero + " não encontrado.");
+    public Pedido buscarPedido(Usuario usuario, int numeroPedido) {
+        Autorizacao.exigirLogin(usuario);
+        return buscarPedidoObrigatorio(numeroPedido);
+    }
+
+    public Cobranca buscarCobranca(Usuario usuario, int numeroPedido) {
+        Autorizacao.exigirLogin(usuario);
+        return cobrancas.buscarPorPedido(numeroPedido);
+    }
+
+    private Pedido buscarPedidoObrigatorio(int numeroPedido) {
+        Pedido pedido = pedidos.buscarPorNumero(numeroPedido);
+        if (pedido == null) {
+            throw new RegraDeNegocioException("Pedido #" + numeroPedido + " não encontrado.");
+        }
         return pedido;
     }
 
-    private Produto buscarProduto(String codigo) {
-        Produto produto = produtos.buscarPorCodigo(codigo);
-        if (produto == null) throw new RegraDeNegocioException("Produto não encontrado: " + codigo + ".");
+    private Produto buscarProdutoObrigatorio(String codigoProduto) {
+        Produto produto = produtos.buscarPorCodigo(codigoProduto);
+        if (produto == null) {
+            throw new RegraDeNegocioException("Produto \"" + codigoProduto + "\" não encontrado.");
+        }
         return produto;
     }
 
-    private void notificarMudanca(Pedido pedido, StatusPedido anterior) {
-        if (notificacoes != null && anterior != pedido.getStatus())
-            notificacoes.notificarMudancaDeStatus(pedido, anterior, pedido.getStatus());
+    private Cobranca buscarCobrancaObrigatoria(int numeroPedido) {
+        Cobranca cobranca = cobrancas.buscarPorPedido(numeroPedido);
+        if (cobranca == null) {
+            throw new RegraDeNegocioException("Inconsistência: o pedido #" + numeroPedido
+                    + " está confirmado, mas não tem cobrança.");
+        }
+        return cobranca;
     }
 
-    private void avisarEstoqueSeNecessario(Produto produto) {
-        if (notificacoes != null && produto.atingiuEstoqueMinimo())
-            notificacoes.notificarEstoqueMinimo(produto);
-    }
-
-    private void executarTransacao(Runnable operacao) {
-        transacao.iniciar();
-        try {
-            operacao.run();
-            transacao.efetivar();
-        } catch (RuntimeException e) {
-            transacao.desfazer();
-            throw e;
+    private void avisarSeAtingiuEstoqueMinimo(List<Produto> produtosAlterados) {
+        for (Produto produto : produtosAlterados) {
+            if (produto.atingiuEstoqueMinimo()) {
+                notificacoes.notificarEstoqueMinimo(produto);                       
+            }
         }
     }
 }
