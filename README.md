@@ -15,7 +15,7 @@
 - **E-mail:** arthur.rego@dcx.ufpb.br
 - **GitHub:** [ArthurSRego](https://github.com/ArthurSRego)
 - **Foto:**
-- <img width="160" height="160" alt="image" src="https://github.com/user-attachments/assets/7897a394-ccc9-402e-a57b-be542ebc7816" />
+  <img width="160" height="160" alt="image" src="https://github.com/user-attachments/assets/7897a394-ccc9-402e-a57b-be542ebc7816" />
 
 
 ### Tércio Felipe Oliveira Francelino
