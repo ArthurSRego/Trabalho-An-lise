@@ -3,7 +3,10 @@ package br.ufpb.mercadinho.dominio.pedido;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufpb.mercadinho.dominio.Produto;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
 import br.ufpb.mercadinho.excecao.EstoqueInsuficienteException;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 import br.ufpb.mercadinho.excecao.TransicaoInvalidaException;

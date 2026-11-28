@@ -1,4 +1,4 @@
-package br.ufpb.mercadinho.visao;
+package br.ufpb.mercadinho.excecao;
 
 public class FimDaEntradaException extends RuntimeException {
     public FimDaEntradaException() {

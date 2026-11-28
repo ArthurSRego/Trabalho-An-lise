@@ -1,5 +1,7 @@
 package br.ufpb.mercadinho.dominio.pedido;
 
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 
 public class ItemPedido {

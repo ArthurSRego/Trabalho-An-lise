@@ -1,6 +1,7 @@
 package br.ufpb.mercadinho.dominio.usuario;
 
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
+import br.ufpb.mercadinho.util.Texto;
 
 public class Usuario {
 

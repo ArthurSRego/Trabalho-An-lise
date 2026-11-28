@@ -1,5 +1,8 @@
 package br.ufpb.mercadinho.dominio;
 
+import br.ufpb.mercadinho.util.Texto;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
 import br.ufpb.mercadinho.excecao.EstoqueInsuficienteException;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
 

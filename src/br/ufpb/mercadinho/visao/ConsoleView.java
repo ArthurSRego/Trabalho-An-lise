@@ -8,6 +8,7 @@ import br.ufpb.mercadinho.dominio.pedido.*;
 import br.ufpb.mercadinho.dominio.Produto;
 import br.ufpb.mercadinho.dominio.usuario.Usuario;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
+import br.ufpb.mercadinho.excecao.FimDaEntradaException;
 
 public class ConsoleView {
 

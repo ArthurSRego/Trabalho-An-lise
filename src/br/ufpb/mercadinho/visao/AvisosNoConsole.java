@@ -8,22 +8,23 @@ import br.ufpb.mercadinho.servico.observador.ObservadorPedido;
 
 
 public class AvisosNoConsole implements ObservadorPedido, ObservadorEstoque {
-    private final ConsoleView visao;
 
-    public AvisosNoConsole(ConsoleView visao) {
-        if (visao == null) throw new IllegalArgumentException("A visão do console é obrigatória.");
-        this.visao = visao;
+    private final ConsoleView view;
+
+    public AvisosNoConsole(ConsoleView view) {
+        this.view = view;
     }
 
     @Override
     public void statusDoPedidoMudou(Pedido pedido, StatusPedido statusAnterior, StatusPedido statusNovo) {
-        visao.exibirMensagem("[PEDIDO] Pedido #" + pedido.getNumero() + " mudou de "
-                + statusAnterior + " para " + statusNovo + ".");
+        view.mostrarNotificacao("Pedido #" + pedido.getNumero() + " (" + pedido.getCliente() + "): "
+                + statusAnterior + " -> " + statusNovo);
     }
 
     @Override
     public void estoqueAtingiuMinimo(Produto produto) {
-        visao.exibirMensagem("[ESTOQUE] Atenção: " + produto.getNome() + " (" + produto.getCodigo()
-                + ") atingiu o estoque mínimo. Disponível: " + produto.getEstoqueDisponivel() + ".");
+        view.mostrarAlerta(produto.getNome() + " (" + produto.getCodigo() + ") está com "
+                + produto.getEstoqueDisponivel() + " unidade(s) disponível(is); o mínimo é "
+                + produto.getEstoqueMinimo() + ". Avise o gerente para repor.");
     }
 }

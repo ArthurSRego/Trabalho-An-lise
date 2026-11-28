@@ -1,4 +1,4 @@
-package br.ufpb.mercadinho.dominio;
+package br.ufpb.mercadinho.util;
 
 public class Texto {
     // Pequenas funções de apoio para validar textos dos identificadores

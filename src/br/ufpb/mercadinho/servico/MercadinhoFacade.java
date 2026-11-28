@@ -1,49 +1,136 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.Produto;
-import br.ufpb.mercadinho.dominio.pedido.Pedido;
-import br.ufpb.mercadinho.dominio.usuario.Usuario;
-import br.ufpb.mercadinho.dominio.valor.*;
-import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
-import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
-
 import java.util.List;
 
+import br.ufpb.mercadinho.dominio.Produto;
+import br.ufpb.mercadinho.dominio.desconto.CatalogoDescontos;
+import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
+import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
+import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
+import br.ufpb.mercadinho.dominio.usuario.Usuario;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
+import br.ufpb.mercadinho.repositorio.UsuarioRepositorio;
+
 public class MercadinhoFacade {
+
+    private final UsuarioRepositorio usuarios;
     private final ProdutoService produtoService;
     private final PedidoService pedidoService;
+    private final CatalogoDescontos catalogoDescontos;
 
-    public MercadinhoFacade(ProdutoService produtoService, PedidoService pedidoService) {
-        if (produtoService == null || pedidoService == null)
-            throw new IllegalArgumentException("Os serviços de produto e pedido são obrigatórios.");
+    private Usuario usuarioLogado;   // null enquanto ninguém fez login
+
+    public MercadinhoFacade(UsuarioRepositorio usuarios, ProdutoService produtoService,
+                            PedidoService pedidoService, CatalogoDescontos catalogoDescontos) {
+        this.usuarios = usuarios;
         this.produtoService = produtoService;
         this.pedidoService = pedidoService;
+        this.catalogoDescontos = catalogoDescontos;
     }
 
-    public void cadastrarProduto(Usuario usuario, Produto produto) { produtoService.cadastrar(usuario, produto); }
-    public Produto buscarProduto(Usuario usuario, String codigo) { return produtoService.buscarPorCodigo(usuario, codigo); }
-    public List<Produto> listarProdutos(Usuario usuario) { return produtoService.listarTodos(usuario); }
-    public void registrarEntradaEstoque(Usuario usuario, String codigo, Quantidade quantidade) {
-        produtoService.registrarEntrada(usuario, codigo, quantidade);
-    }
-    public void registrarSaidaEstoque(Usuario usuario, String codigo, Quantidade quantidade) {
-        produtoService.registrarSaida(usuario, codigo, quantidade);
-    }
-    public void alterarPreco(Usuario usuario, String codigo, Dinheiro preco) {
-        produtoService.alterarPreco(usuario, codigo, preco);
+
+    // Sessão
+
+
+    public Usuario entrar(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            throw new RegraDeNegocioException("Informe o login.");
+        }
+        Usuario usuario = usuarios.buscarPorLogin(login);
+        if (usuario == null) {
+            throw new RegraDeNegocioException("Usuário \"" + login.trim() + "\" não encontrado.");
+        }
+        usuarioLogado = usuario;
+        return usuario;
     }
 
-    public Pedido criarPedido(Usuario usuario, String cliente, PoliticaDesconto desconto) {
-        return pedidoService.criarPedido(usuario, cliente, desconto);
+    public void sair() {
+        usuarioLogado = null;
     }
-    public Pedido adicionarItem(Usuario usuario, int numeroPedido, String codigoProduto, Quantidade quantidade) {
-        return pedidoService.adicionarItem(usuario, numeroPedido, codigoProduto, quantidade);
+
+    public Usuario getUsuarioLogado() {
+        return usuarioLogado;
     }
-    public Cobranca confirmarPedido(Usuario usuario, int numeroPedido) {
-        return pedidoService.confirmar(usuario, numeroPedido);
+
+    public List<Usuario> listarUsuarios() {
+        return usuarios.listarTodos();
     }
-    public void finalizarPedido(Usuario usuario, int numeroPedido) { pedidoService.finalizar(usuario, numeroPedido); }
-    public void cancelarPedido(Usuario usuario, int numeroPedido) { pedidoService.cancelar(usuario, numeroPedido); }
-    public Pedido buscarPedido(Usuario usuario, int numero) { return pedidoService.buscarPorNumero(usuario, numero); }
-    public List<Pedido> listarPedidos(Usuario usuario) { return pedidoService.listarTodos(usuario); }
+
+    public void verificarAcessoDeGerente(String acao) {
+        Autorizacao.exigirGerente(usuarioLogado, acao);
+    }
+
+
+    // Pedidos
+
+
+    public List<PoliticaDesconto> listarPoliticasDesconto() {
+        Autorizacao.exigirLogin(usuarioLogado);
+        return catalogoDescontos.listar();
+    }
+
+    public Pedido registrarPedido(String cliente, String codigoPoliticaDesconto) {
+        return pedidoService.registrarPedido(usuarioLogado, cliente, codigoPoliticaDesconto);
+    }
+
+    public Pedido adicionarItem(int numeroPedido, String codigoProduto, int quantidade) {
+        return pedidoService.adicionarItem(usuarioLogado, numeroPedido, codigoProduto, quantidade);
+    }
+
+    public boolean confirmarPedido(int numeroPedido) {
+        return pedidoService.confirmarPedido(usuarioLogado, numeroPedido);
+    }
+
+    public void finalizarPedido(int numeroPedido) {
+        pedidoService.finalizarPedido(usuarioLogado, numeroPedido);
+    }
+
+
+    public StatusPedido cancelarPedido(int numeroPedido) {
+        return pedidoService.cancelarPedido(usuarioLogado, numeroPedido);
+    }
+
+    public List<Pedido> listarPedidos() {
+        return pedidoService.listarPedidos(usuarioLogado);
+    }
+
+    public Pedido buscarPedido(int numeroPedido) {
+        return pedidoService.buscarPedido(usuarioLogado, numeroPedido);
+    }
+
+    public Cobranca buscarCobrancaDoPedido(int numeroPedido) {
+        return pedidoService.buscarCobranca(usuarioLogado, numeroPedido);
+    }
+
+
+    // Produtos e estoque
+
+
+    public List<Produto> listarProdutos() {
+        return produtoService.listarProdutos(usuarioLogado);
+    }
+
+    public Produto cadastrarProduto(String codigo, String nome, long precoEmCentavos,
+                                    int estoqueInicial, int estoqueMinimo) {
+        return produtoService.cadastrarProduto(usuarioLogado, codigo, nome, new Dinheiro(precoEmCentavos),
+                estoqueInicial, estoqueMinimo);
+    }
+
+    public Produto alterarPreco(String codigo, long novoPrecoEmCentavos) {
+        return produtoService.alterarPreco(usuarioLogado, codigo, new Dinheiro(novoPrecoEmCentavos));
+    }
+
+    public Produto registrarEntradaDeEstoque(String codigo, int quantidade) {
+        return produtoService.registrarEntrada(usuarioLogado, codigo, quantidade);
+    }
+
+    public Produto registrarSaidaDeEstoque(String codigo, int quantidade) {
+        return produtoService.registrarSaida(usuarioLogado, codigo, quantidade);
+    }
+
+    public List<Produto> listarProdutosParaRepor() {
+        return produtoService.listarProdutosParaRepor(usuarioLogado);
+    }
 }

@@ -1,7 +1,7 @@
 package br.ufpb.mercadinho.dominio.financeiro;
 
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
 import br.ufpb.mercadinho.excecao.RegraDeNegocioException;
-
 
 public class Cobranca {
 
