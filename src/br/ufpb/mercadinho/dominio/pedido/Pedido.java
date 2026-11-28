@@ -1,4 +1,4 @@
-package br.ufpb.mercadinho.dominio;
+package br.ufpb.mercadinho.dominio.pedido;
 
 import java.util.ArrayList;
 import java.util.List;
