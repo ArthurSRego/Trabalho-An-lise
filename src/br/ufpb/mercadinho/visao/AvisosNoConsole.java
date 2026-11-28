@@ -6,7 +6,7 @@ import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
 import br.ufpb.mercadinho.servico.observador.ObservadorEstoque;
 import br.ufpb.mercadinho.servico.observador.ObservadorPedido;
 
-/** Observador concreto que apresenta notificações ao usuário no console. */
+
 public class AvisosNoConsole implements ObservadorPedido, ObservadorEstoque {
     private final ConsoleView visao;
 
