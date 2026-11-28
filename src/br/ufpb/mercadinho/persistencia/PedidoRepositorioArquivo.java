@@ -3,11 +3,11 @@ package br.ufpb.mercadinho.persistencia;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufpb.mercadinho.dominio.Dinheiro;
-import br.ufpb.mercadinho.dominio.ItemPedido;
-import br.ufpb.mercadinho.dominio.Pedido;
-import br.ufpb.mercadinho.dominio.Quantidade;
-import br.ufpb.mercadinho.dominio.StatusPedido;
+import br.ufpb.mercadinho.dominio.valor.Dinheiro;
+import br.ufpb.mercadinho.dominio.pedido.ItemPedido;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
+import br.ufpb.mercadinho.dominio.valor.Quantidade;
+import br.ufpb.mercadinho.dominio.pedido.StatusPedido;
 import br.ufpb.mercadinho.dominio.desconto.CatalogoDescontos;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
