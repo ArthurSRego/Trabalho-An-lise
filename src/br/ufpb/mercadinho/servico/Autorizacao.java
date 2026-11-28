@@ -1,25 +1,24 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.Usuario;
+import br.ufpb.mercadinho.dominio.usuario.*;
 import br.ufpb.mercadinho.excecao.AcessoNegadoException;
 
-/** Reúne as verificações de permissão utilizadas pelos serviços. */
 public class Autorizacao {
 
-    public void exigirUsuarioAutenticado(Usuario usuario) {
+    private Autorizacao() {
+    }
+
+    public static void exigirLogin(Usuario usuario) {
         if (usuario == null) {
-            throw new AcessoNegadoException("É necessário informar um usuário autenticado.");
+            throw new AcessoNegadoException("Acesso negado: é preciso fazer login antes.");
         }
     }
 
-    public void exigirGerente(Usuario usuario) {
-        exigirUsuarioAutenticado(usuario);
-        if (!usuario.ehGerente()) {
-            throw new AcessoNegadoException("A operação é permitida somente para usuários com perfil GERENTE.");
+    public static void exigirGerente(Usuario usuario, String acao) {
+        exigirLogin(usuario);
+        if (usuario.getPerfil() != Perfil.GERENTE) {
+            throw new AcessoNegadoException("Acesso negado: somente o GERENTE pode " + acao
+                    + ". Usuário atual: " + usuario.getLogin() + " (" + usuario.getPerfil() + ").");
         }
-    }
-
-    public void exigirAtendenteOuGerente(Usuario usuario) {
-        exigirUsuarioAutenticado(usuario);
     }
 }
