@@ -14,7 +14,8 @@
 ### Arthur Silva Rêgo
 - **E-mail:** arthur.rego@dcx.ufpb.br
 - **GitHub:** [ArthurSRego](https://github.com/ArthurSRego)
-- **Foto:** *(pendente)*
+- **Foto:** <img width="640" height="640" alt="image" src="https://github.com/user-attachments/assets/7897a394-ccc9-402e-a57b-be542ebc7816" />
+
 
 ### Tércio Felipe Oliveira Francelino
 - **E-mail:** tercio.oliveira@dcx.ufpb.br
