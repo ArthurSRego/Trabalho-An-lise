@@ -1,6 +1,10 @@
 package br.ufpb.mercadinho.servico;
 
-import br.ufpb.mercadinho.dominio.*;
+import br.ufpb.mercadinho.dominio.Produto;
+import br.ufpb.mercadinho.dominio.pedido.Pedido;
+import br.ufpb.mercadinho.dominio.usuario.Usuario;
+import br.ufpb.mercadinho.dominio.valor.*;
+import br.ufpb.mercadinho.dominio.financeiro.Cobranca;
 import br.ufpb.mercadinho.dominio.desconto.PoliticaDesconto;
 
 import java.util.List;
