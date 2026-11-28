@@ -3,8 +3,8 @@ package br.ufpb.mercadinho.persistencia;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufpb.mercadinho.dominio.Perfil;
-import br.ufpb.mercadinho.dominio.Usuario;
+import br.ufpb.mercadinho.dominio.usuario.Perfil;
+import br.ufpb.mercadinho.dominio.usuairo.Usuario;
 import br.ufpb.mercadinho.excecao.PersistenciaException;
 import br.ufpb.mercadinho.repositorio.UsuarioRepositorio;
 
